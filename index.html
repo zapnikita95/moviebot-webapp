@@ -134,7 +134,9 @@
     }
 
     function send(command) {
-      console.log('Отправка команды:', command);
+      console.log('=== ОТПРАВКА КОМАНДЫ ===');
+      console.log('Команда:', command);
+      console.log('tg доступен:', !!tg);
       
       if (!tg) {
         alert('Telegram Web App не доступен. Попробуйте обновить чат.');
@@ -143,13 +145,26 @@
       
       try {
         const data = JSON.stringify({command: command});
-        console.log('Данные:', data);
+        console.log('Данные для отправки:', data);
+        console.log('Вызов tg.sendData()...');
+        
+        // Проверяем, что sendData существует
+        if (typeof tg.sendData !== 'function') {
+          console.error('❌ tg.sendData не является функцией!');
+          console.error('Доступные методы tg:', Object.keys(tg));
+          alert('Ошибка: sendData недоступен');
+          return;
+        }
+        
         tg.sendData(data);
-        console.log('Данные отправлены');
+        console.log('✅ sendData() вызван успешно');
+        console.log('Ожидаем закрытия WebApp...');
+        
         // НЕ закрываем вручную — Telegram сам закроет после sendData
       } catch (error) {
-        console.error('Ошибка sendData:', error);
-        alert('Ошибка отправки команды. Попробуйте снова.');
+        console.error('❌ Ошибка sendData:', error);
+        console.error('Stack:', error.stack);
+        alert('Ошибка отправки команды: ' + error.message);
       }
     }
     

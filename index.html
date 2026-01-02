@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MovieBot Меню</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    window.addEventListener('beforeunload', () => {
+      if (window.Telegram?.WebApp) {
+        Telegram.WebApp.close();
+      }
+    });
+  </script>
   <style>
     * {
       box-sizing: border-box;
@@ -127,37 +134,22 @@
     }
 
     function send(command) {
-      console.log('=== ОТПРАВКА КОМАНДЫ ===');
-      console.log('Команда:', command);
+      console.log('Отправка команды:', command);
       
       if (!tg) {
-        console.error('❌ Telegram WebApp не доступен');
-        console.error('Попытка fallback через window.open');
-        // Fallback: открываем бота с командой
-        window.open(`https://t.me/movie_planner_bot?start=${command}`, '_blank');
+        alert('Telegram Web App не доступен. Попробуйте обновить чат.');
         return;
       }
       
       try {
         const data = JSON.stringify({command: command});
-        console.log('Данные для отправки:', data);
-        console.log('Вызов tg.sendData()...');
-        
+        console.log('Данные:', data);
         tg.sendData(data);
-        
-        console.log('✅ Данные отправлены через tg.sendData()');
-        console.log('Закрываем WebApp...');
-        
-        // Небольшая задержка перед закрытием, чтобы данные успели отправиться
-        setTimeout(() => {
-          tg.close();
-          console.log('✅ WebApp закрыт');
-        }, 100);
+        console.log('Данные отправлены');
+        // НЕ закрываем вручную — Telegram сам закроет после sendData
       } catch (error) {
-        console.error('❌ Ошибка отправки команды:', error);
-        console.error('Stack:', error.stack);
-        // Fallback: открываем бота с командой
-        window.open(`https://t.me/movie_planner_bot?start=${command}`, '_blank');
+        console.error('Ошибка sendData:', error);
+        alert('Ошибка отправки команды. Попробуйте снова.');
       }
     }
     

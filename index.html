@@ -103,19 +103,36 @@
     // Инициализация Telegram Web App
     let tg = window.Telegram?.WebApp;
     
+    console.log('=== ИНИЦИАЛИЗАЦИЯ WEB APP ===');
+    console.log('window.Telegram:', window.Telegram);
+    console.log('window.Telegram?.WebApp:', window.Telegram?.WebApp);
+    
     if (!tg) {
-      console.error('Telegram WebApp API не загружен');
+      console.error('❌ Telegram WebApp API не загружен');
+      console.error('Проверьте, что Web App открыт через кнопку меню в Telegram');
     } else {
+      console.log('✅ Telegram WebApp API найден');
+      console.log('tg.version:', tg.version);
+      console.log('tg.platform:', tg.platform);
+      console.log('tg.initData:', tg.initData);
+      
       tg.ready();
       tg.expand();
-      console.log('Telegram WebApp инициализирован');
+      console.log('✅ Telegram WebApp инициализирован');
+      
+      // Обработчик события отправки данных
+      tg.onEvent('viewportChanged', function() {
+        console.log('Viewport changed');
+      });
     }
 
     function send(command) {
-      console.log('Отправка команды:', command);
+      console.log('=== ОТПРАВКА КОМАНДЫ ===');
+      console.log('Команда:', command);
       
       if (!tg) {
-        console.error('Telegram WebApp не доступен');
+        console.error('❌ Telegram WebApp не доступен');
+        console.error('Попытка fallback через window.open');
         // Fallback: открываем бота с командой
         window.open(`https://t.me/movie_planner_bot?start=${command}`, '_blank');
         return;
@@ -123,15 +140,36 @@
       
       try {
         const data = JSON.stringify({command: command});
-        console.log('Отправка данных:', data);
+        console.log('Данные для отправки:', data);
+        console.log('Вызов tg.sendData()...');
+        
         tg.sendData(data);
-        console.log('Данные отправлены, закрываем WebApp');
-        tg.close();
+        
+        console.log('✅ Данные отправлены через tg.sendData()');
+        console.log('Закрываем WebApp...');
+        
+        // Небольшая задержка перед закрытием, чтобы данные успели отправиться
+        setTimeout(() => {
+          tg.close();
+          console.log('✅ WebApp закрыт');
+        }, 100);
       } catch (error) {
-        console.error('Ошибка отправки команды:', error);
+        console.error('❌ Ошибка отправки команды:', error);
+        console.error('Stack:', error.stack);
         // Fallback: открываем бота с командой
         window.open(`https://t.me/movie_planner_bot?start=${command}`, '_blank');
       }
+    }
+    
+    // Логируем все события WebApp
+    if (tg) {
+      tg.onEvent('mainButtonClicked', function() {
+        console.log('Main button clicked');
+      });
+      
+      tg.onEvent('backButtonClicked', function() {
+        console.log('Back button clicked');
+      });
     }
   </script>
 </body>

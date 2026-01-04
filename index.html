@@ -75,44 +75,44 @@
   
   <div class="section">
     <div class="section-title">Основные команды</div>
-    <button class="button" onclick="send('random')">🎲 Рандомный фильм</button>
-    <button class="button" onclick="send('list')">📋 Непросмотренные</button>
-    <button class="button" onclick="send('schedule')">🗓️ Расписание</button>
-    <button class="button" onclick="send('plan')">📝 Запланировать</button>
-    <button class="button" onclick="send('search')">🔍 Поиск</button>
+    <button class="button" onclick="send('random', event)">🎲 Рандомный фильм</button>
+    <button class="button" onclick="send('list', event)">📋 Непросмотренные</button>
+    <button class="button" onclick="send('schedule', event)">🗓️ Расписание</button>
+    <button class="button" onclick="send('plan', event)">📝 Запланировать</button>
+    <button class="button" onclick="send('search', event)">🔍 Поиск</button>
   </div>
   
   <div class="section">
     <div class="section-title">Премьеры и сериалы</div>
-    <button class="button" onclick="send('premieres')">📅 Премьеры</button>
-    <button class="button" onclick="send('seasons')">📺 Сериалы</button>
+    <button class="button" onclick="send('premieres', event)">📅 Премьеры</button>
+    <button class="button" onclick="send('seasons', event)">📺 Сериалы</button>
   </div>
   
   <div class="section">
     <div class="section-title">Кино и билеты</div>
-    <button class="button" onclick="send('ticket')">🎟️ Билеты в кино</button>
+    <button class="button" onclick="send('ticket', event)">🎟️ Билеты в кино</button>
   </div>
   
   <div class="section">
     <div class="section-title">Статистика и настройки</div>
-    <button class="button" onclick="send('total')">📊 Статистика</button>
-    <button class="button" onclick="send('stats')">📈 Детальная статистика</button>
-    <button class="button" onclick="send('rate')">⭐ Оценить фильмы</button>
-    <button class="button" onclick="send('settings')">⚙️ Настройки</button>
+    <button class="button" onclick="send('total', event)">📊 Статистика</button>
+    <button class="button" onclick="send('stats', event)">📈 Детальная статистика</button>
+    <button class="button" onclick="send('rate', event)">⭐ Оценить фильмы</button>
+    <button class="button" onclick="send('settings', event)">⚙️ Настройки</button>
   </div>
   
   <div class="section">
     <div class="section-title">Управление</div>
-    <button class="button" onclick="send('edit')">✏️ Редактировать</button>
-    <button class="button" onclick="send('clean')">🗑️ Очистить</button>
-    <button class="button" onclick="send('join')">👥 Участие</button>
-    <button class="button" onclick="send('payment')">💳 Оплата</button>
+    <button class="button" onclick="send('edit', event)">✏️ Редактировать</button>
+    <button class="button" onclick="send('clean', event)">🗑️ Очистить</button>
+    <button class="button" onclick="send('join', event)">👥 Участие</button>
+    <button class="button" onclick="send('payment', event)">💳 Оплата</button>
   </div>
   
   <div class="section">
     <div class="section-title">Помощь</div>
-    <button class="button" onclick="send('help')">❓ Помощь</button>
-    <button class="button" onclick="send('start')">🏠 Главная</button>
+    <button class="button" onclick="send('help', event)">❓ Помощь</button>
+    <button class="button" onclick="send('start', event)">🏠 Главная</button>
   </div>
 
   <script>
@@ -134,21 +134,31 @@
       
       tg.ready();
       tg.expand();
+      
+      // Настраиваем тему приложения
+      tg.setHeaderColor('#3390ec');
+      tg.setBackgroundColor('#ffffff');
+      
       console.log('✅ Telegram WebApp инициализирован');
       
       // Обработчик события отправки данных
       tg.onEvent('viewportChanged', function() {
         console.log('Viewport changed');
       });
+      
+      // Обработчик закрытия приложения
+      tg.onEvent('close', function() {
+        console.log('WebApp закрывается');
+      });
     }
 
-    function send(command) {
+    function send(command, event) {
       console.log('=== ОТПРАВКА КОМАНДЫ ===');
       console.log('Команда:', command);
       console.log('tg доступен:', !!tg);
       
       if (!tg) {
-        alert('Telegram Web App не доступен. Попробуйте обновить чат.');
+        tg.showAlert('Telegram Web App не доступен. Попробуйте обновить чат.');
         return;
       }
       
@@ -161,7 +171,7 @@
         if (typeof tg.sendData !== 'function') {
           console.error('❌ tg.sendData не является функцией!');
           console.error('Доступные методы tg:', Object.keys(tg));
-          alert('Ошибка: sendData недоступен');
+          tg.showAlert('Ошибка: sendData недоступен');
           return;
         }
         
@@ -169,11 +179,24 @@
         console.log('✅ sendData() вызван успешно');
         console.log('Ожидаем закрытия WebApp...');
         
+        // Показываем визуальную обратную связь
+        if (event && event.target) {
+          const button = event.target;
+          button.style.opacity = '0.6';
+          setTimeout(() => {
+            if (button) button.style.opacity = '1';
+          }, 200);
+        }
+        
         // НЕ закрываем вручную — Telegram сам закроет после sendData
       } catch (error) {
         console.error('❌ Ошибка sendData:', error);
         console.error('Stack:', error.stack);
-        alert('Ошибка отправки команды: ' + error.message);
+        if (tg.showAlert) {
+          tg.showAlert('Ошибка отправки команды: ' + error.message);
+        } else {
+          alert('Ошибка отправки команды: ' + error.message);
+        }
       }
     }
     

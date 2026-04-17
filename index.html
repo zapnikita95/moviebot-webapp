@@ -1,235 +1,68 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 MovieBot</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            min-height: 100vh;
-        }
-        
-        h1 {
-            text-align: center;
-            color: var(--tg-theme-link-color, #2481cc);
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: var(--tg-theme-hint-color, #999999);
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 15px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--tg-theme-text-color, #000000);
-        }
-        
-        .button-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .button {
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
-            font-weight: 500;
-            text-align: center;
-        }
-        
-        .button:active {
-            opacity: 0.8;
-            transform: scale(0.98);
-        }
-        
-        .button-full {
-            grid-column: 1 / -1;
-        }
-        
-        .hint {
-            color: var(--tg-theme-hint-color, #999999);
-            font-size: 12px;
-            margin-top: 20px;
-            text-align: center;
-            padding: 0 20px;
-        }
-        
-        @media (max-width: 400px) {
-            .button-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Movie Planner — Mini App</title>
+  <meta http-equiv="refresh" content="0; url=https://web-production-3921c.up.railway.app/miniapp" />
+  <link rel="canonical" href="https://web-production-3921c.up.railway.app/miniapp" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      background: var(--tg-theme-bg-color, #0f1115);
+      color: var(--tg-theme-text-color, #f5f5f7);
+      text-align: center;
+      padding: 24px;
+    }
+    .box { max-width: 320px; }
+    .logo { font-size: 48px; margin-bottom: 12px; }
+    h1 { font-size: 18px; margin: 0 0 8px; font-weight: 600; }
+    p { color: var(--tg-theme-hint-color, #8a8f99); font-size: 14px; margin: 0 0 20px; }
+    a {
+      display: inline-block;
+      padding: 11px 22px;
+      background: var(--tg-theme-button-color, #ffb547);
+      color: var(--tg-theme-button-text-color, #0f1115);
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .spinner {
+      width: 24px; height: 24px;
+      margin: 0 auto 16px;
+      border: 3px solid rgba(255, 181, 71, 0.2);
+      border-top-color: #ffb547;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
-    <h1>🍿 MovieBot</h1>
-    <div class="subtitle">Управление фильмами и сериалами</div>
-    
-    <div class="card">
-        <div class="card-title">🎬 Основные команды</div>
-        <div class="button-grid">
-            <button class="button" onclick="send('random', event)">🎲 Рандом</button>
-            <button class="button" onclick="send('list', event)">📋 Список</button>
-            <button class="button" onclick="send('schedule', event)">🗓️ Расписание</button>
-            <button class="button" onclick="send('plan', event)">📝 Планировать</button>
-            <button class="button button-full" onclick="send('search', event)">🔍 Поиск фильмов</button>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-title">📺 Премьеры и сериалы</div>
-        <div class="button-grid">
-            <button class="button" onclick="send('premieres', event)">📅 Премьеры</button>
-            <button class="button" onclick="send('seasons', event)">📺 Сериалы</button>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-title">🎟️ Кино и билеты</div>
-        <div class="button-grid">
-            <button class="button button-full" onclick="send('ticket', event)">🎟️ Добавить билет в кино</button>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-title">📊 Статистика</div>
-        <div class="button-grid">
-            <button class="button" onclick="send('total', event)">📊 Общая</button>
-            <button class="button" onclick="send('stats', event)">📈 Детальная</button>
-            <button class="button" onclick="send('rate', event)">⭐ Оценить</button>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-title">⚙️ Настройки и управление</div>
-        <div class="button-grid">
-            <button class="button" onclick="send('settings', event)">⚙️ Настройки</button>
-            <button class="button" onclick="send('edit', event)">✏️ Редактировать</button>
-            <button class="button" onclick="send('join', event)">👥 Участие</button>
-            <button class="button" onclick="send('payment', event)">💳 Оплата</button>
-        </div>
-    </div>
-    
-    <div class="hint">
-        Кнопка внизу фиксированная — она всегда над полем ввода текста в чате.
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-
-        // Инициализация
-        tg.ready();
-        tg.expand(); // Растягиваем на весь экран
-        
-        // Настраиваем цвета темы
-        if (tg.themeParams) {
-            tg.setHeaderColor(tg.themeParams.bg_color || '#ffffff');
-            tg.setBackgroundColor(tg.themeParams.bg_color || '#ffffff');
-        }
-
-        // Настраиваем Main Button (он появится внизу над строкой ввода)
-        tg.MainButton.setText("🔍 Найти фильм или премьеру");
-        tg.MainButton.setParams({
-            color: tg.themeParams?.button_color || '#2481cc',
-            text_color: tg.themeParams?.button_text_color || '#ffffff'
-        });
-        tg.MainButton.show();
-
-        // Обработчик нажатия на Main Button
-        tg.MainButton.onClick(function() {
-            // Показываем popup с выбором действия
-            tg.showPopup({
-                title: "Что ищем?",
-                message: "Выберите действие",
-                buttons: [
-                    {text: "🔍 Поиск фильмов", type: "default", id: "search"},
-                    {text: "📅 Премьеры", type: "default", id: "premieres"},
-                    {text: "🎲 Рандомный фильм", type: "default", id: "random"},
-                    {text: "Отмена", type: "cancel"}
-                ]
-            }, function(buttonId) {
-                if (buttonId && buttonId !== 'cancel') {
-                    send(buttonId, null);
-                }
-            });
-        });
-
-        // Функция отправки команды
-        function send(command, event) {
-            if (!tg) {
-                tg.showAlert('Telegram Web App не доступен. Попробуйте обновить чат.');
-                return;
-            }
-            
-            try {
-                const data = JSON.stringify({command: command});
-                
-                // Показываем визуальную обратную связь
-                if (event && event.target) {
-                    const button = event.target;
-                    button.style.opacity = '0.6';
-                    setTimeout(() => {
-                        if (button) button.style.opacity = '1';
-                    }, 200);
-                }
-                
-                // Отправляем данные боту
-                tg.sendData(data);
-                
-                // Показываем прогресс на Main Button (если это не было нажатие на Main Button)
-                if (event) {
-                    tg.MainButton.showProgress();
-                    setTimeout(() => tg.MainButton.hideProgress(), 1000);
-                }
-            } catch (error) {
-                console.error('❌ Ошибка sendData:', error);
-                tg.showAlert('Ошибка отправки команды: ' + error.message);
-            }
-        }
-        
-        // Обработчик изменения темы
-        tg.onEvent('themeChanged', function() {
-            // Обновляем цвета при смене темы
-            if (tg.themeParams) {
-                tg.setHeaderColor(tg.themeParams.bg_color || '#ffffff');
-                tg.setBackgroundColor(tg.themeParams.bg_color || '#ffffff');
-                tg.MainButton.setParams({
-                    color: tg.themeParams.button_color || '#2481cc',
-                    text_color: tg.themeParams.button_text_color || '#ffffff'
-                });
-            }
-        });
-    </script>
+  <div class="box">
+    <div class="logo">🎬</div>
+    <div class="spinner"></div>
+    <h1>Переносим в новый дом</h1>
+    <p>Movie Planner Mini App теперь живёт на сервере бота. Если переадресация не сработала автоматически — нажмите кнопку ниже.</p>
+    <a href="https://web-production-3921c.up.railway.app/miniapp">Открыть Mini App</a>
+  </div>
+  <script>
+    // Двойная страховка: после 300 мс форсим редирект на новый домен,
+    // сохраняя startapp/параметры запуска, если они были.
+    (function () {
+      try { if (window.Telegram && Telegram.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); } } catch (e) {}
+      var target = "https://web-production-3921c.up.railway.app/miniapp";
+      var search = location.search || "";
+      var hash = location.hash || "";
+      setTimeout(function () { location.replace(target + search + hash); }, 300);
+    })();
+  </script>
 </body>
 </html>
